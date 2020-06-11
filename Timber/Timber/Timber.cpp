@@ -37,6 +37,15 @@ int main()
 	bool cloud1Active = false, cloud2Active = false, cloud3Active = false;
 	float cloud1Speed = 0.0f, cloud2Speed = 0.0f, cloud3Speed = 0.0f;
 	Clock clock;
+	RectangleShape timeBar;
+	float timeBarStartWidth = 400;
+	float timeBarHeight = 80;
+	timeBar.setSize(Vector2f(timeBarStartWidth, timeBarHeight));
+	timeBar.setFillColor(Color::Red);
+	timeBar.setPosition((1920 / 2) - timeBarStartWidth / 2, 980);
+	Time gameTimeTotal;
+	float timeRemaining = 6.0f;
+	float timeBarWidthPerSecond = timeBarStartWidth / timeRemaining;
 	bool paused = true;
 	int score = 0;
 	sf::Text messageText;
@@ -68,6 +77,15 @@ int main()
 		if (!paused)
 		{
 			Time dt = clock.restart();
+			timeRemaining -= dt.asSeconds();
+			timeBar.setSize(Vector2f(timeBarWidthPerSecond * timeRemaining, timeBarHeight));
+			if (timeRemaining <= 0.0f) {
+				paused = true;
+				messageText.setString("Out of time!!");
+				FloatRect textRect = messageText.getLocalBounds();
+				messageText.setOrigin(textRect.left + textRect.width / 2.0f, textRect.top + textRect.height / 2.0f);
+				messageText.setPosition(1920 / 2.0f, 1080 / 2.0f);
+			}
 			if (!beeActive)
 			{
 				srand((int)time(0) * 10);
@@ -147,6 +165,12 @@ int main()
 		window.draw(spriteCloud3);
 		window.draw(spriteTree);
 		window.draw(spriteBee);
+		window.draw(scoreText);
+		window.draw(timeBar);
+		if (paused)
+		{
+			window.draw(messageText);
+		}
 		window.display();
 	}
 	return 0;
