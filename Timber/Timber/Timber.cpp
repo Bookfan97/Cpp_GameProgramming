@@ -4,7 +4,6 @@
 #include <sstream>
 #include <SFML/Audio.hpp>
 using namespace sf;
-
 void updateBranches(int seed);
 const int NUM_BRANCHES = 6;
 Sprite branches[NUM_BRANCHES];
@@ -25,6 +24,15 @@ int main()
 	Sprite spriteTree;
 	spriteTree.setTexture(textureTree);
 	spriteTree.setPosition(810, 0);
+	Texture textureTree2;
+	textureTree2.loadFromFile("../graphics/tree2.png");
+	const int NUM_TREES = 6;
+	Sprite trees[NUM_TREES];
+	for (int i = 0; i < NUM_TREES; i++)
+	{
+		trees[i].setTexture(textureTree2);
+		trees[i].setPosition((rand() % 1920), (rand() % 540) - 540);
+	}
 	Texture textureBee;
 	textureBee.loadFromFile("../graphics/bee.png");
 	Sprite spriteBee;
@@ -34,15 +42,17 @@ int main()
 	float beeSpeed = 0.0f;
 	Texture textureCloud;
 	textureCloud.loadFromFile("../graphics/cloud.png");
-	Sprite spriteCloud1, spriteCloud2, spriteCloud3;
-	spriteCloud1.setTexture(textureCloud);
-	spriteCloud2.setTexture(textureCloud);
-	spriteCloud3.setTexture(textureCloud);
-	spriteCloud1.setPosition(0, 0);
-	spriteCloud2.setPosition(0, 150);
-	spriteCloud3.setPosition(0, 300);
-	bool cloud1Active = false, cloud2Active = false, cloud3Active = false;
-	float cloud1Speed = 0.0f, cloud2Speed = 0.0f, cloud3Speed = 0.0f;
+	const int NUM_CLOUDS = 6;
+	Sprite clouds[NUM_CLOUDS];
+	int cloudSpeeds[NUM_CLOUDS];
+	bool cloudsActive[NUM_CLOUDS];
+	for (int i = 0; i < NUM_CLOUDS; i++)
+	{
+		clouds[i].setTexture(textureCloud);
+		clouds[i].setPosition(-300, i * 150);
+		cloudsActive[i] = false;
+		cloudSpeeds[i] = 0;
+	}
 	Clock clock;
 	RectangleShape timeBar;
 	float timeBarStartWidth = 400;
@@ -55,22 +65,35 @@ int main()
 	float timeBarWidthPerSecond = timeBarStartWidth / timeRemaining;
 	bool paused = true;
 	int score = 0;
-	sf::Text messageText;
-	sf::Text scoreText;
+	Text messageText;
+	Text scoreText;
+	Text fpsText;
 	Font font;
 	font.loadFromFile("../fonts/KOMIKAP_.ttf");
 	messageText.setFont(font);
 	scoreText.setFont(font);
-	messageText.setString("Press Enter to Start");
+	fpsText.setFont(font);
+	fpsText.setFillColor(Color::White);
+	fpsText.setCharacterSize(20);
+	fpsText.setPosition(1750, 25);
+	messageText.setString("Press Enter to start!");
 	scoreText.setString("Score = 0");
 	messageText.setCharacterSize(75);
 	scoreText.setCharacterSize(100);
-	messageText.setFillColor(sf::Color::White);
-	scoreText.setFillColor(sf::Color::White);
+	messageText.setFillColor(Color::White);
+	scoreText.setFillColor(Color::White);
 	FloatRect textRect = messageText.getLocalBounds();
 	messageText.setOrigin(textRect.left + textRect.width / 2.0f, textRect.top + textRect.height / 2.0f);
 	messageText.setPosition(1920 / 2.0f, 1080 / 2.0f);
 	scoreText.setPosition(20, 20);
+	RectangleShape rect1;
+	rect1.setFillColor(sf::Color(0, 0, 0, 150));
+	rect1.setSize(Vector2f(600, 105));
+	rect1.setPosition(0, 30);
+	RectangleShape rect2;
+	rect2.setFillColor(sf::Color(0, 0, 0, 150));
+	rect2.setSize(Vector2f(150, 30));
+	rect2.setPosition(1750, 20);
 	Texture textureBranch;
 	textureBranch.loadFromFile("../graphics/branch.png");
 	for (int i = 0; i < NUM_BRANCHES; i++)
@@ -95,7 +118,7 @@ int main()
 	Sprite spriteAxe;
 	spriteAxe.setTexture(textureAxe);
 	spriteAxe.setPosition(700, 830);
-	const float AXE_POSITION_LEFT = 700, AXE_POSITION_RIGHT = 1075;
+	const float AXE_POSITION_LEFT = 830, AXE_POSITION_RIGHT = 1075;
 	Texture textureLog;
 	textureLog.loadFromFile("../graphics/log.png");
 	Sprite spriteLog;
@@ -115,6 +138,7 @@ int main()
 	ootBuffer.loadFromFile("../sound/out_of_time.wav");
 	Sound outOfTime;
 	outOfTime.setBuffer(ootBuffer);
+	int lastDrawn = 0;
 	while (window.isOpen())
 	{
 		Event event;
@@ -151,7 +175,9 @@ int main()
 				score++;
 				timeRemaining += (2 / score) + .15;
 				spriteAxe.setPosition(AXE_POSITION_RIGHT, spriteAxe.getPosition().y);
+				spriteAxe.setScale(sf::Vector2f(1, 1));
 				spritePlayer.setPosition(1200, 720);
+				spritePlayer.setScale(sf::Vector2f(1, 1));
 				updateBranches(score);
 				spriteLog.setPosition(810, 720);
 				logSpeedX = -5000;
@@ -165,7 +191,9 @@ int main()
 				score++;
 				timeRemaining += (2 / score) + .15;
 				spriteAxe.setPosition(AXE_POSITION_LEFT, spriteAxe.getPosition().y);
-				spritePlayer.setPosition(580, 720);
+				spriteAxe.setScale(sf::Vector2f(-1, 1));
+				spritePlayer.setPosition(700, 720);
+				spritePlayer.setScale(sf::Vector2f(-1, 1));
 				updateBranches(score);
 				spriteLog.setPosition(810, 720);
 				logSpeedX = 5000;
@@ -204,60 +232,37 @@ int main()
 					beeActive = false;
 				}
 			}
-			if (!cloud1Active)
+			for (int i = 0; i < NUM_CLOUDS; i++)
 			{
-				srand((int)time(0) * 10);
-				cloud1Speed = (rand() % 200);
-				srand((int)time(0) * 10);
-				float height = (rand() % 150);
-				spriteCloud1.setPosition(-200, height);
-				cloud1Active = true;
-			}
-			else
-			{
-				spriteCloud1.setPosition(spriteCloud1.getPosition().x + (cloud1Speed * dt.asSeconds()), spriteCloud1.getPosition().y);
-				if (spriteCloud1.getPosition().x > 1920)
+				if (!cloudsActive[i])
 				{
-					cloud1Active = false;
+					srand((int)time(0) * i);
+					cloudSpeeds[i] = (rand() % 200);
+					srand((int)time(0) * i);
+					float height = (rand() % 150);
+					clouds[i].setPosition(-200, height);
+					cloudsActive[i] = true;
+				}
+				else
+				{
+					clouds[i].setPosition(clouds[i].getPosition().x + (cloudSpeeds[i] * dt.asSeconds()), clouds[i].getPosition().y);
+					if (clouds[i].getPosition().x > 1920)
+					{
+						cloudsActive[i] = false;
+					}
 				}
 			}
-			if (!cloud2Active)
+			lastDrawn++;
+			if (lastDrawn == 100)
 			{
-				srand((int)time(0) * 20);
-				cloud2Speed = (rand() % 200);
-				srand((int)time(0) * 20);
-				float height = (rand() % 300) - 150;
-				spriteCloud2.setPosition(-200, height);
-				cloud2Active = true;
+				std::stringstream ss;
+				ss << "Score = " << score;
+				scoreText.setString(ss.str());
+				std::stringstream ss2;
+				ss2 << "FPS = " << 1 / dt.asSeconds();
+				fpsText.setString(ss2.str());
+				lastDrawn = 0;
 			}
-			else
-			{
-				spriteCloud2.setPosition(spriteCloud2.getPosition().x + (cloud2Speed * dt.asSeconds()), spriteCloud2.getPosition().y);
-				if (spriteCloud2.getPosition().x > 1920)
-				{
-					cloud2Active = false;
-				}
-			}
-			if (!cloud3Active)
-			{
-				srand((int)time(0) * 30);
-				cloud3Speed = (rand() % 200);
-				srand((int)time(0) * 30);
-				float height = (rand() % 450) - 150;
-				spriteCloud3.setPosition(-200, height);
-				cloud3Active = true;
-			}
-			else
-			{
-				spriteCloud3.setPosition(spriteCloud3.getPosition().x + (cloud3Speed * dt.asSeconds()), spriteCloud3.getPosition().y);
-				if (spriteCloud3.getPosition().x > 1920)
-				{
-					cloud3Active = false;
-				}
-			}
-			std::stringstream ss;
-			ss << "Score = " << score;
-			scoreText.setString(ss.str());
 			for (int i = 0; i < NUM_BRANCHES; i++)
 			{
 				float height = i * 150;
@@ -292,7 +297,7 @@ int main()
 				paused = true;
 				acceptInput = false;
 				spriteDead.setPosition(525, 760);
-				spritePlayer.setPosition(2000, 660);
+				spritePlayer.setPosition(3000, 660);
 				messageText.setString("LOOKS LIKE YOU GOT STUMPED");
 				FloatRect textRect = messageText.getLocalBounds();
 				messageText.setOrigin(textRect.left + textRect.width / 2.0f, textRect.top + textRect.height / 2.0f);
@@ -302,11 +307,15 @@ int main()
 		}
 		window.clear();
 		window.draw(spriteBackground);
-		window.draw(spriteCloud1);
-		window.draw(spriteCloud2);
-		window.draw(spriteCloud3);
-		for (int i = 0; i < NUM_BRANCHES; i++)
+		for (int i = 0; i < NUM_CLOUDS; i++)
 		{
+			window.draw(clouds[i]);
+		}
+		for (int i = 0; i < NUM_TREES; i++)
+		{
+			window.draw(trees[i]);
+		}
+		for (int i = 0; i < NUM_BRANCHES; i++) {
 			window.draw(branches[i]);
 		}
 		window.draw(spriteTree);
@@ -314,8 +323,11 @@ int main()
 		window.draw(spriteAxe);
 		window.draw(spriteLog);
 		window.draw(spriteDead);
+		window.draw(rect1);
+		window.draw(rect2);
 		window.draw(spriteBee);
 		window.draw(scoreText);
+		window.draw(fpsText);
 		window.draw(timeBar);
 		if (paused)
 		{
@@ -326,28 +338,20 @@ int main()
 	return 0;
 }
 
-// Function definition
 void updateBranches(int seed)
 {
-	// Move all the branches down one place
 	for (int j = NUM_BRANCHES - 1; j > 0; j--) {
 		branchPositions[j] = branchPositions[j - 1];
 	}
-
-	// Spawn a new branch at position 0
-	// LEFT, RIGHT or NONE
 	srand((int)time(0) + seed);
 	int r = (rand() % 5);
-
 	switch (r) {
 	case 0:
 		branchPositions[0] = side::LEFT;
 		break;
-
 	case 1:
 		branchPositions[0] = side::RIGHT;
 		break;
-
 	default:
 		branchPositions[0] = side::NONE;
 		break;
