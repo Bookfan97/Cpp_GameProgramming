@@ -94,16 +94,25 @@ int main()
 	Sprite spriteAxe;
 	spriteAxe.setTexture(textureAxe);
 	spriteAxe.setPosition(700, 830);
-	const float AXE_POSITION_LEFT = 700, AXE_POSTION_RIGHT = 1075;
+	const float AXE_POSITION_LEFT = 700, AXE_POSITION_RIGHT = 1075;
 	Texture textureLog;
 	textureLog.loadFromFile("../graphics/log.png");
 	Sprite spriteLog;
 	spriteLog.setTexture(textureLog);
 	spriteLog.setPosition(810, 720);
-	bool logActive = false;
+	bool logActive = false, acceptInput = false;
 	float logSpeedX = 1000, logSpeedY = -1500;
 	while (window.isOpen())
 	{
+		Event event;
+		while (window.pollEvent(event))
+		{
+			if (event.type == Event::KeyReleased && !paused)
+			{
+				acceptInput = true;
+				spriteAxe.setPosition(2000, spriteAxe.getPosition().y);
+			}
+		}
 		if (Keyboard::isKeyPressed(Keyboard::Escape))
 		{
 			window.close();
@@ -111,6 +120,44 @@ int main()
 		if (Keyboard::isKeyPressed(Keyboard::Return))
 		{
 			paused = false;
+			score = 0;
+			timeRemaining = 5;
+			for (int i = 1; i < NUM_BRANCHES; i++)
+			{
+				branchPositions[i] = side::NONE;
+			}
+			spriteDead.setPosition(675, 2000);
+			spritePlayer.setPosition(580, 720);
+			acceptInput = true;
+		}
+		if (acceptInput)
+		{
+			if (Keyboard::isKeyPressed(Keyboard::Right) || Keyboard::isKeyPressed(Keyboard::D))
+			{
+				playerSide = side::RIGHT;
+				score++;
+				timeRemaining += (2 / score) + .15;
+				spriteAxe.setPosition(AXE_POSITION_RIGHT, spriteAxe.getPosition().y);
+				spritePlayer.setPosition(1200, 720);
+				updateBranches(score);
+				spriteLog.setPosition(810, 720);
+				logSpeedX = -5000;
+				logActive = true;
+				acceptInput = false;
+			}
+			else if (Keyboard::isKeyPressed(Keyboard::Left) || Keyboard::isKeyPressed(Keyboard::A))
+			{
+				playerSide = side::LEFT;
+				score++;
+				timeRemaining += (2 / score) + .15;
+				spriteAxe.setPosition(AXE_POSITION_LEFT, spriteAxe.getPosition().y);
+				spritePlayer.setPosition(580, 720);
+				updateBranches(score);
+				spriteLog.setPosition(810, 720);
+				logSpeedX = 5000;
+				logActive = true;
+				acceptInput = false;
+			}
 		}
 		if (!paused)
 		{
@@ -190,6 +237,15 @@ int main()
 				if (spriteCloud3.getPosition().x > 1920)
 				{
 					cloud3Active = false;
+				}
+			}
+			if (logActive)
+			{
+				spriteLog.setPosition(spriteLog.getPosition().x + (logSpeedX * dt.asSeconds()), spriteLog.getPosition().y + (logSpeedY * dt.asSeconds()));
+				if (spriteLog.getPosition().x < -100 || spriteLog.getPosition().x > 2000)
+				{
+					logActive = false;
+					spriteLog.setPosition(810, 720);
 				}
 			}
 		}
