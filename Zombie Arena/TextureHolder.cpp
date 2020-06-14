@@ -9,7 +9,7 @@ TextureHolder::TextureHolder()
 	m_s_Instance = this;
 }
 
-Texture& TextureHolder::GetTexture(std::string const& filename)
+sf::Texture& TextureHolder::GetTexture(std::string const& filename)
 {
 	auto& m = m_s_Instance->m_Textures;
 	auto keyValuePair = m.find(filename);

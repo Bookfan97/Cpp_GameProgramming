@@ -9,7 +9,8 @@ private:
 	Vector2f m_Position;
 	RectangleShape m_BulletShape;
 	bool m_InFlight = false;
-	float m_Bulletspeed = 1000, m_BulletDistanceX, m_BulletDistanceY, m_MaxX, m_MinX, m_MaxY, m_MinY;
+	float m_Bulletspeed = 1000, m_BulletDistanceX, m_BulletDistanceY, m_MaxX, m_MinX, m_MaxY, m_MinY,
+		m_XTarget, m_YTarget;
 public:
 	Bullet();
 	void stop();

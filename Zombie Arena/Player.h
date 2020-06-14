@@ -24,6 +24,7 @@ private:
 	float m_Speed;
 public:
 	Player();
+	void resetPlayerStats();
 	void spawn(IntRect arena, Vector2f resolution, int tileSize);
 	bool hit(Time timeHit);
 	Time getLastHitTime();

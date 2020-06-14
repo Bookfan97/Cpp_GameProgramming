@@ -1,5 +1,4 @@
 #include "Bullet.h"
-
 Bullet::Bullet()
 {
 	m_BulletShape.setSize(sf::Vector2f(2, 2));
@@ -36,6 +35,8 @@ void Bullet::shoot(float startX, float startY, float targetX, float targetY)
 	{
 		m_BulletDistanceY *= -1;
 	}
+	m_XTarget = targetX;
+	m_YTarget = targetY;
 	float range = 1000;
 	m_MinX = startX - range;
 	m_MaxX = startX + range;
