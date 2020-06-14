@@ -26,7 +26,7 @@ int main()
 	VertexArray background;
 	Texture textureBackground = TextureHolder::GetTexture("graphics/background_sheet.png");
 	int numZombies, numZombiesAlive;
-	Zombie* zombies = nullptr;
+	Zombie* zombies = NULL;
 	Bullet bullets[100];
 	int currentBullet = 0, bulletsSpare = 24, bulletsInClip = 6, clipSize = 6;
 	float fireRate = 1;
@@ -37,6 +37,7 @@ int main()
 	spriteCrossHair.setTexture(textureCrossHair);
 	spriteCrossHair.setOrigin(25, 25);
 	Pickup healthPickup(1), ammoPickup(2);
+	int score = 0, hiScore = 0;
 	while (window.isOpen())
 	{
 		Event event;
@@ -168,7 +169,6 @@ int main()
 				player.spawn(arena, resolution, tileSize);
 				healthPickup.setArena(arena);
 				ammoPickup.setArena(arena);
-
 				numZombies = 10;
 				delete[] zombies;
 				zombies = createHorde(numZombies, arena);
@@ -198,11 +198,59 @@ int main()
 			{
 				if (bullets[i].isInFlight())
 				{
-					bullets[i].update(dt.asSeconds());
+					bullets[i].update(dtAsSeconds);
 				}
 			}
 			healthPickup.update(dtAsSeconds);
 			ammoPickup.update(dtAsSeconds);
+			for (int i = 0; i < 100; i++)
+			{
+				for (int j = 0; j < numZombies; j++)
+				{
+					if (bullets[i].isInFlight() && zombies[j].isAlive())
+					{
+						if (bullets[i].getPosition().intersects(zombies[j].getPosition()))
+						{
+							bullets[i].stop();
+							if (zombies[j].hit())
+							{
+								score += 10;
+								if (score >= hiScore)
+								{
+									hiScore = score;
+								}
+								numZombiesAlive--;
+								if (numZombiesAlive == 0)
+								{
+									state = State::LEVELING_UP;
+								}
+							}
+						}
+					}
+				}
+			}
+			for (int i = 0; i < numZombies; i++)
+			{
+				if (player.getPosition().intersects(zombies[i].getPosition()) && zombies[i].isAlive())
+				{
+					if (player.hit(gameTimeTotal))
+					{
+					}
+					if (player.getHealth() <= 0)
+					{
+						state = State::GAME_OVER;
+					}
+				}
+			}
+			if (player.getPosition().intersects
+			(healthPickup.getPosition()) && healthPickup.isSpawned())
+			{
+				player.increaseHealthLevel(healthPickup.gotIt());
+			}
+			if (player.getPosition().intersects(ammoPickup.getPosition()) && ammoPickup.isSpawned())
+			{
+				bulletsSpare += ammoPickup.gotIt();
+			}
 		}
 		if (state == State::PLAYING)
 		{
@@ -217,7 +265,7 @@ int main()
 			{
 				if (bullets[i].isInFlight())
 				{
-					bullets[i].getShape();
+					window.draw(bullets[i].getShape());
 				}
 			}
 			window.draw(player.getSprite());
@@ -246,6 +294,5 @@ int main()
 
 		window.display();
 	}
-	delete[] zombies;
 	return 0;
 }
