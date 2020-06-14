@@ -2,6 +2,7 @@
 #include "Zombie_Arena.h"
 #include "Player.h"
 #include "TextureHolder.h"
+#include "Bullet.h"
 using namespace sf;
 
 int main()
@@ -24,6 +25,10 @@ int main()
 	Texture textureBackground = TextureHolder::GetTexture("graphics/background_sheet.png");
 	int numZombies, numZombiesAlive;
 	Zombie* zombies = nullptr;
+	Bullet bullets[100];
+	int currentBullet = 0, bulletsSpare = 24, bulletsInClip = 6, clipSize = 6;
+	float fireRate = 1;
+	Time lastPressed;
 	while (window.isOpen())
 	{
 		Event event;
@@ -46,6 +51,22 @@ int main()
 				}
 				if (state == State::PLAYING)
 				{
+					if (event.key.code == Keyboard::R)
+					{
+						if (bulletsSpare >= clipSize)
+						{
+							bulletsInClip = clipSize;
+							bulletsSpare -= clipSize;
+						}
+						else if (bulletsSpare > 0)
+						{
+							bulletsInClip = bulletsSpare;
+							bulletsSpare = 0;
+						}
+						else
+						{
+						}
+					}
 				}
 			}
 		}
@@ -87,6 +108,20 @@ int main()
 			else
 			{
 				player.stopRight();
+			}
+			if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+			{
+				if (gameTimeTotal.asMilliseconds() - lastPressed.asMilliseconds() > 1000 / fireRate && bulletsInClip > 0)
+				{
+					bullets[currentBullet].shoot(player.getCenter().x, player.getCenter().y, mouseWorldPosition.x, mouseWorldPosition.y);
+					currentBullet++;
+					if (currentBullet > 99)
+					{
+						currentBullet = 0;
+					}
+					lastPressed = gameTimeTotal;
+					bulletsInClip--;
+				}
 			}
 		}
 		if (state == State::LEVELING_UP)
@@ -145,6 +180,13 @@ int main()
 				if (zombies[i].isAlive())
 				{
 					zombies[i].update(dt.asSeconds(), playerPosition);
+				}
+			}
+			for (int i = 0; i < 100; i++)
+			{
+				if (bullets[i].isInFlight())
+				{
+					bullets[i].update(dt.asSeconds());
 				}
 			}
 		}
