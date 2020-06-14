@@ -3,6 +3,8 @@
 #include "Player.h"
 #include "TextureHolder.h"
 #include "Bullet.h"
+#include "Pickup.h"
+
 using namespace sf;
 
 int main()
@@ -29,6 +31,12 @@ int main()
 	int currentBullet = 0, bulletsSpare = 24, bulletsInClip = 6, clipSize = 6;
 	float fireRate = 1;
 	Time lastPressed;
+	window.setMouseCursorVisible(false);
+	Sprite spriteCrossHair;
+	Texture textureCrossHair = TextureHolder::GetTexture("graphics/crosshair.png");
+	spriteCrossHair.setTexture(textureCrossHair);
+	spriteCrossHair.setOrigin(25, 25);
+	Pickup healthPickup(1), ammoPickup(2);
 	while (window.isOpen())
 	{
 		Event event;
@@ -158,6 +166,9 @@ int main()
 				arena.top = 0;
 				int tileSize = createBackground(background, arena);
 				player.spawn(arena, resolution, tileSize);
+				healthPickup.setArena(arena);
+				ammoPickup.setArena(arena);
+
 				numZombies = 10;
 				delete[] zombies;
 				zombies = createHorde(numZombies, arena);
@@ -172,6 +183,7 @@ int main()
 			float dtAsSeconds = dt.asSeconds();
 			mouseScreenPosition = Mouse::getPosition();
 			mouseWorldPosition = window.mapPixelToCoords(Mouse::getPosition(), mainView);
+			spriteCrossHair.setPosition(mouseWorldPosition);
 			player.update(dtAsSeconds, Mouse::getPosition());
 			Vector2f playerPosition(player.getCenter());
 			mainView.setCenter(player.getCenter());
@@ -189,6 +201,8 @@ int main()
 					bullets[i].update(dt.asSeconds());
 				}
 			}
+			healthPickup.update(dtAsSeconds);
+			ammoPickup.update(dtAsSeconds);
 		}
 		if (state == State::PLAYING)
 		{
@@ -199,7 +213,23 @@ int main()
 			{
 				window.draw(zombies[i].getSprite());
 			}
+			for (int i = 0; i < 100; i++)
+			{
+				if (bullets[i].isInFlight())
+				{
+					bullets[i].getShape();
+				}
+			}
 			window.draw(player.getSprite());
+			if (ammoPickup.isSpawned())
+			{
+				window.draw(ammoPickup.getSprite());
+			}
+			if (healthPickup.isSpawned())
+			{
+				window.draw(healthPickup.getSprite());
+			}
+			window.draw(spriteCrossHair);
 		}
 
 		if (state == State::LEVELING_UP)
