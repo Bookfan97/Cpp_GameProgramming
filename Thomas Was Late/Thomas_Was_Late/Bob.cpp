@@ -41,5 +41,4 @@ bool Bob::handleInput()
 		}
 		return m_JustJumped;
 	}
-	return false;
 }

@@ -41,5 +41,4 @@ bool Thomas::handleInput()
 		}
 		return m_JustJumped;
 	}
-	return false;
 }

@@ -16,11 +16,13 @@ void Engine::draw()
 		m_Window.setView(m_BGLeftView);
 		m_Window.draw(m_BackgroundSprite);
 		m_Window.setView(m_LeftView);
-		m_Window.setView(m_BGRightView);
 		m_Window.draw(m_Bob.getSprite());
 		m_Window.draw(m_Thomas.getSprite());
+		m_Window.setView(m_BGRightView);
 		m_Window.draw(m_BackgroundSprite);
-		m_Window.setView(m_LeftView);
+		m_Window.setView(m_RightView);
+		m_Window.draw(m_Thomas.getSprite());
+		m_Window.draw(m_Bob.getSprite());
 	}
 	m_Window.setView(m_HudView);
 	m_Window.display();
