@@ -25,4 +25,10 @@ void Engine::input()
 			}
 		}
 	}
+	if (m_Thomas.handleInput())
+	{
+	}
+	if (m_Bob.handleInput())
+	{
+	}
 }
