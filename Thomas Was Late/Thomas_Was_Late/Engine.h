@@ -5,6 +5,7 @@
 #include "Bob.h"
 #include "LevelManager.h"
 #include "SoundManager.h"
+#include "HUD.h"
 
 using namespace sf;
 
@@ -16,6 +17,8 @@ private:
 	Bob m_Bob;
 	LevelManager m_LM;
 	SoundManager m_SM;
+	HUD m_HUD;
+	int m_FramesSinceLastHUDUpdate = 0, m_TargetFramesSinceLastHUDUpdate = 500;
 	const int TILE_SIZE = 50;
 	const int VERTS_IN_QUAD = 4;
 	const int GRAVITY = 300;

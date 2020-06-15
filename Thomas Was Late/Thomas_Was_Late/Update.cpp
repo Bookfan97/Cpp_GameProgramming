@@ -64,4 +64,14 @@ void Engine::update(float dtAsSeconds)
 			m_MainView.setCenter(m_Bob.getCenter());
 		}
 	}
+	m_FramesSinceLastHUDUpdate++;
+	if (m_TargetFramesSinceLastHUDUpdate > m_TargetFramesSinceLastHUDUpdate)
+	{
+		stringstream ssTime, ssLevel;
+		ssTime << (int)m_TimeRemaining;
+		m_HUD.setTime(ssTime.str());
+		ssLevel << "Level: " << m_LM.getCurrentLevel();
+		m_HUD.setLevel(ssLevel.str());
+		m_FramesSinceLastHUDUpdate = 0;
+	}
 }
