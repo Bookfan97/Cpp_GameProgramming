@@ -28,6 +28,7 @@ private:
 	View m_MainView, m_LeftView, m_RightView, m_BGMainView, m_BGLeftView, m_BGRightView, m_HudView;
 	Sprite m_BackgroundSprite;
 	Texture m_BackgroundTexture;
+	Shader m_RippleShader;
 	bool m_Playing = false, m_Character1 = true, m_SplitScreen = false, m_NewLevelRequired = true;
 	float m_TimeRemaining = 10;
 	Time m_GameTimeTotal;
