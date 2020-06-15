@@ -27,8 +27,10 @@ void Engine::input()
 	}
 	if (m_Thomas.handleInput())
 	{
+		m_SM.playJump();
 	}
 	if (m_Bob.handleInput())
 	{
+		m_SM.playJump();
 	}
 }

@@ -17,6 +17,7 @@ void Engine::update(float dtAsSeconds)
 		if (detectCollisions(m_Thomas) && detectCollisions(m_Bob))
 		{
 			m_NewLevelRequired = true;
+			m_SM.playReachGoal();
 		}
 		else
 		{
@@ -34,6 +35,17 @@ void Engine::update(float dtAsSeconds)
 		if (m_TimeRemaining <= 0)
 		{
 			m_NewLevelRequired = true;
+		}
+	}
+	vector<Vector2f>::iterator it;
+	for (it = m_FireEmitters.begin(); it != m_FireEmitters.end(); it++)
+	{
+		float posX = (*it).x;
+		float posY = (*it).y;
+		FloatRect localRect(posX - 250, posY - 250, 500, 500);
+		if (m_Thomas.getPosition().intersects(localRect))
+		{
+			m_SM.playFire(Vector2f(posX, posY), m_Thomas.getCenter());
 		}
 	}
 	if (m_SplitScreen)
