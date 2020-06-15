@@ -18,27 +18,27 @@ bool Thomas::handleInput()
 			m_TimeThisJump = 0;
 			m_JustJumped = true;
 		}
-		else
-		{
-			m_isJumping = false;
-			m_isFalling = true;
-		}
-		if (Keyboard::isKeyPressed(Keyboard::A))
-		{
-			m_LeftPressed = true;
-		}
-		else
-		{
-			m_LeftPressed = false;
-		}
-		if (Keyboard::isKeyPressed(Keyboard::D))
-		{
-			m_RightPressed = true;
-		}
-		else
-		{
-			m_RightPressed = false;
-		}
-		return m_JustJumped;
 	}
+	else
+	{
+		m_isJumping = false;
+		m_isFalling = true;
+	}
+	if (Keyboard::isKeyPressed(Keyboard::A))
+	{
+		m_LeftPressed = true;
+	}
+	else
+	{
+		m_LeftPressed = false;
+	}
+	if (Keyboard::isKeyPressed(Keyboard::D))
+	{
+		m_RightPressed = true;
+	}
+	else
+	{
+		m_RightPressed = false;
+	}
+	return m_JustJumped;
 }

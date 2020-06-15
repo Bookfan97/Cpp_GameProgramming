@@ -8,11 +8,6 @@ void PlayableCharacter::spawn(Vector2f startPosition, float gravity)
 	m_Sprite.setPosition(m_Position);
 }
 
-bool PlayableCharacter::handleInput()
-{
-	return false;
-}
-
 FloatRect PlayableCharacter::getPosition()
 {
 	return m_Sprite.getGlobalBounds();
