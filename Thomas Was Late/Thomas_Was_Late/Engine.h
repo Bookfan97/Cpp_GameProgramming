@@ -6,6 +6,7 @@
 #include "LevelManager.h"
 #include "SoundManager.h"
 #include "HUD.h"
+#include "ParticleSystem.h"
 
 using namespace sf;
 
@@ -13,6 +14,7 @@ class Engine
 {
 private:
 	TextureHolder th;
+	ParticleSystem m_PS;
 	Thomas m_Thomas;
 	Bob m_Bob;
 	LevelManager m_LM;

@@ -74,4 +74,8 @@ void Engine::update(float dtAsSeconds)
 		m_HUD.setLevel(ssLevel.str());
 		m_FramesSinceLastHUDUpdate = 0;
 	}
+	if (m_PS.running())
+	{
+		m_PS.update(dtAsSeconds);
+	}
 }

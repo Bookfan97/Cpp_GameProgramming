@@ -11,6 +11,10 @@ void Engine::draw()
 		m_Window.draw(m_VALevel, &m_TextureTiles);
 		m_Window.draw(m_Thomas.getSprite());
 		m_Window.draw(m_Bob.getSprite());
+		if (m_PS.running())
+		{
+			m_Window.draw(m_PS);
+		}
 	}
 	else
 	{
@@ -26,6 +30,10 @@ void Engine::draw()
 		m_Window.draw(m_VALevel, &m_TextureTiles);
 		m_Window.draw(m_Thomas.getSprite());
 		m_Window.draw(m_Bob.getSprite());
+		if (m_PS.running())
+		{
+			m_Window.draw(m_PS);
+		}
 	}
 	m_Window.setView(m_HudView);
 	m_Window.draw(m_HUD.getLevel());
